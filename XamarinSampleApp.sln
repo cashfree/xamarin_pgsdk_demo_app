@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.IOS.SampleApp", "Xa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Android.Support.SampleApp", "Xamarin.Android.Support.SampleApp\Xamarin.Android.Support.SampleApp.csproj", "{39DAB842-A5C9-44EF-AB31-2417DEE8040B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.AndroidX.SampleApp", "Xamarin.AndroidX.SampleApp\Xamarin.AndroidX.SampleApp.csproj", "{3D55B39D-9B78-4DB2-B143-2949C500C2CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|iPhoneSimulator = Debug|iPhoneSimulator
@@ -29,5 +31,13 @@ Global
 		{39DAB842-A5C9-44EF-AB31-2417DEE8040B}.Debug|iPhone.Build.0 = Debug|Any CPU
 		{39DAB842-A5C9-44EF-AB31-2417DEE8040B}.Release|iPhone.ActiveCfg = Release|Any CPU
 		{39DAB842-A5C9-44EF-AB31-2417DEE8040B}.Release|iPhone.Build.0 = Release|Any CPU
+		{3D55B39D-9B78-4DB2-B143-2949C500C2CD}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{3D55B39D-9B78-4DB2-B143-2949C500C2CD}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{3D55B39D-9B78-4DB2-B143-2949C500C2CD}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{3D55B39D-9B78-4DB2-B143-2949C500C2CD}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{3D55B39D-9B78-4DB2-B143-2949C500C2CD}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{3D55B39D-9B78-4DB2-B143-2949C500C2CD}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{3D55B39D-9B78-4DB2-B143-2949C500C2CD}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{3D55B39D-9B78-4DB2-B143-2949C500C2CD}.Release|iPhone.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
