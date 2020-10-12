@@ -8,7 +8,16 @@ namespace ios_sample_app
 
         public static String GetAppId()
         {
-            return GetEnv().Equals(TEST) ? "-test-appId-here-" : "-prod-appId-here-";
+            if (GetEnv().Equals(TEST))
+            {
+                throw new ArgumentNullException("-test-appId-here--");
+                //return "-test-appId-here-";
+            }
+            else
+            {
+                throw new ArgumentNullException("-prod-appId-here-");
+                //return "-prod-secret-here-";
+            }
         }
 
         public static String GetEnv()
@@ -19,7 +28,16 @@ namespace ios_sample_app
 
         public static String GetSecret()
         {
-            return GetEnv().Equals(TEST) ? "-test-secret-here-" : "-prod-secret-here-";
+            if (GetEnv().Equals(TEST))
+            {
+                throw new ArgumentNullException("-test-secret-here-");
+                //return "-test-secret-here-";
+            }
+            else
+            {
+                throw new ArgumentNullException("-prod-secret-here-");
+                //return "-prod-secret-here-";
+            }
         }
 
         public static string GetOrderID()
