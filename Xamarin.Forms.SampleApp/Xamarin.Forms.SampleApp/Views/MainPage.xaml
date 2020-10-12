@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:views="clr-namespace:SampleFormsApp.Views" x:Class="SampleFormsApp.Views.MainPage">
+    <StackLayout Spacing="20" Padding="15" Margin="56">
+        <Button Text="Start payment" IsEnabled="True" Clicked="Button_Clicked"/>
+        <Label Text="{Binding ButtonText}" Padding="15" HorizontalTextAlignment="Center"/>
+    </StackLayout> 
+</ContentPage>
