@@ -36,7 +36,10 @@ namespace SampleFormsApp.Views
         {
             var Token = await mainViewModel.GetOrderToken();
             var Params = mainViewModel.GetCheckoutParams();
-            await Navigation.PushAsync(CFPaymentService.DoPayment(Params, Token, Credentials.GetEnv(), this));
+            //var background = (Color)App.Current.Resources["NavigationPrimary"];
+            CFPaymentService.Instance.ShowOrderID(true);
+            //CFPaymentService.Instance.SetTheme(background, true);
+            CFPaymentService.Instance.DoPayment(Navigation, Params, Token, Credentials.GetEnv(), this);
         }
     }
 }
