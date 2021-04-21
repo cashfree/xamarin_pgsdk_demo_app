@@ -13,15 +13,21 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using Android.Content;
+using AndroidX.ConstraintLayout.Helper.Widget;
+using AndroidX.ConstraintLayout.Widget;
+using Android.Graphics;
+using Android.Util;
+using Android.Content.Res;
 
 namespace bindingsampleapp
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
-    public class MainActivity : AppCompatActivity
+    public class MainActivity : AppCompatActivity, CFPaymentService.IUPIAppsCallback
     {
-
         String OrderId;
-
+        Flow flow;
+        ConstraintLayout parentLayout;
+        ProgressBar progressBar;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -32,7 +38,19 @@ namespace bindingsampleapp
             SetSupportActionBar(toolbar);
 
             Button btn = FindViewById<Button>(Resource.Id.button1);
-            btn.Click += BtnOnClick;
+            btn.Click += BtnOnWebClick;
+            Button btn2 = FindViewById<Button>(Resource.Id.button2);
+            btn2.Click += BtnOnUPIClick;
+            flow = FindViewById<Flow>(Resource.Id.flow1);
+            parentLayout = FindViewById<ConstraintLayout>(Resource.Id.upi_layout);
+            progressBar = FindViewById<ProgressBar>(Resource.Id.progressBar1);
+            getUpiApps();
+        }
+
+        private void getUpiApps()
+        {
+            progressBar.Visibility = ViewStates.Visible;
+            CFPaymentService.CFPaymentServiceInstance.GetUpiClients(this, this);
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -52,19 +70,38 @@ namespace bindingsampleapp
             return base.OnOptionsItemSelected(item);
         }
 
-        private void BtnOnClick(object sender, EventArgs eventArgs)
+        private void BtnOnWebClick(object sender, EventArgs eventArgs)
         {
             TextView textView = FindViewById<TextView>(Resource.Id.textView1);
-            textView.SetText("", TextView.BufferType.Normal);
+            textView.SetText("Result Will Show Here", TextView.BufferType.Normal);
 
-            StartPayment();
+            StartWebPayment();
         }
 
-        private async void StartPayment()
+        private void BtnOnUPIClick(object sender, EventArgs eventArgs)
+        {
+            TextView textView = FindViewById<TextView>(Resource.Id.textView1);
+            textView.SetText("Result Will Show Here", TextView.BufferType.Normal);
+
+            StartUPIPayment(null);
+        }
+
+        private async void StartWebPayment()
         {
             var Token = await GetOrderToken();
             var Params = GetCheckoutParams();
-            DoPayment(Params, Token);
+            CFPaymentService.CFPaymentServiceInstance.DoPayment(this, Params, Token, Credentials.GetEnv(), "#2c3e50", "#ffffff");
+        }
+
+        private async void StartUPIPayment(String app)
+        {
+            var Token = await GetOrderToken();
+            var Params = GetCheckoutParams();
+            if (app != null)
+            {
+                Params.Add("appName", app);
+            }
+            CFPaymentService.CFPaymentServiceInstance.UpiPayment(this, Params, Token, Credentials.GetEnv());
         }
 
         private Dictionary<String, String> GetCheckoutParams()
@@ -102,10 +139,6 @@ namespace bindingsampleapp
             return Token;
         }
 
-        private void DoPayment(Dictionary<string, string> pairs, string token)
-        {
-            CFPaymentService.CFPaymentServiceInstance.DoPayment(this, pairs, token, Credentials.GetEnv());
-        }
 
         private Dictionary<string, string> GetOrderParams()
         {
@@ -135,11 +168,82 @@ namespace bindingsampleapp
                 String dataString = data.GetStringExtra("txStatus");
                 if (dataString != null)
                 {
-                    textView.SetText(dataString, Android.Widget.TextView.BufferType.Normal);
+                    textView.SetText(dataString, TextView.BufferType.Normal);
                 }
             }
 
         }
 
+        public void OnUPIAppsFetched(IList<IDictionary<string, string>> list)
+        {
+            if (list.Count == 0)
+            {
+                progressBar.Visibility = ViewStates.Gone;
+                FindViewById<TextView>(Resource.Id.no_upi_apps).Visibility = ViewStates.Visible;
+                return;
+            }
+            if (flow != null && parentLayout != null)
+            {
+                int i = 0;
+                List<LinearLayout> imageList = new List<LinearLayout>();
+                List<int> refIds = new List<int>();
+                foreach (IDictionary<string, string> dict in list)
+                {
+                    refIds.Add(i);
+                    imageList.Add(SetImage(dict["displayName"], dict["id"], dict["icon"], i));
+                    i++;
+                }
+                RunOnUiThread(() =>
+                {
+                    progressBar.Visibility = ViewStates.Gone;
+                    foreach (LinearLayout view in imageList)
+                    {
+                        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WrapContent,
+                ConstraintLayout.LayoutParams.WrapContent);
+                        parentLayout.AddView(view, layoutParams);
+                    }
+                    flow.SetReferencedIds(refIds.ToArray());
+                });
+            }
+        }
+
+
+        private LinearLayout SetImage(string DisplayName, string Id, string Icon, int viewId)
+        {
+            LinearLayout ll = new LinearLayout(this);
+            ll.Orientation = Android.Widget.Orientation.Vertical;
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, LinearLayout.LayoutParams.WrapContent);
+            LinearLayout.LayoutParams textLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WrapContent, LinearLayout.LayoutParams.WrapContent);
+            int size = (int)Math.Round(TypedValue.ApplyDimension(
+                ComplexUnitType.Dip, 56, this.Resources.DisplayMetrics));
+            int textSize = (int)Math.Round(TypedValue.ApplyDimension(
+                ComplexUnitType.Sp, 10, this.Resources.DisplayMetrics));
+            layoutParams.Height = size;
+            layoutParams.Width = size;
+            textLayoutParams.Gravity = GravityFlags.CenterHorizontal;
+
+            ImageView imageView = new ImageView(this);
+            imageView.SetMaxHeight(56);
+            imageView.SetMaxWidth(56);
+
+            byte[] decodedString = Base64.Decode(Icon, Base64Flags.NoWrap);
+            Bitmap decodedByte = BitmapFactory.DecodeByteArray(decodedString, 0, decodedString.Length);
+
+            imageView.SetImageBitmap(decodedByte);
+
+            TextView textView = new TextView(this);
+            textView.SetText(DisplayName, TextView.BufferType.Normal);
+
+            ll.Id = viewId;
+            ll.Click += (sender, ea) =>
+            {
+                StartUPIPayment(Id);
+            };
+
+            ll.AddView(imageView, layoutParams);
+            ll.AddView(textView, textLayoutParams);
+
+            return ll;
+        }
     }
 }

@@ -10,31 +10,31 @@ namespace SampleFormsApp
         {
             if (GetEnv().Equals(TEST))
             {
-                throw new ArgumentNullException("-test-appId-here--");
-                //return "-test-appId-here-";
+                throw new ArgumentNullException("--test-appId-here--");
+                //return "--test-appId-here--";
             }
             else
             {
-                throw new ArgumentNullException("-prod-appId-here-");
-                //return "-prod-secret-here-";
+                throw new ArgumentNullException("--prod-appId-here--");
+                //return "--prod-appId-here--";
             }
         }
 
         public static String GetEnv()
         {
-            // return PROD;
-            return TEST;
+            return PROD;
+            //return TEST;
         }
 
         public static String GetSecret()
         {
             if (GetEnv().Equals(TEST)) {
-                throw new ArgumentNullException("-test-secret-here-");
-                //return "-test-secret-here-";
+                throw new ArgumentNullException("--test-secret-here--");
+                //return "--test-secret-here--";
             } else
             {
-                throw new ArgumentNullException("-prod-secret-here-");
-                //return "-prod-secret-here-";
+                throw new ArgumentNullException("--prod-secret-here--");
+                //return "--prod-secret-here--";
             }
         }
 
